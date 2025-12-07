@@ -1,0 +1,12 @@
+{
+  "/cursos": {
+    "target": "http://localhost:8090",
+    "secure": false,
+    "changeOrigin": true
+  },
+  "/modulos": {
+    "target": "http://localhost:8090",
+    "secure": false,
+    "changeOrigin": true
+  }
+}
