@@ -1,0 +1,80 @@
+<div class="reviews-wrapper fade-in">
+
+  <!-- Top bar -->
+  <div class="reviews-top-bar">
+    <button class="btn-back-review" (click)="close.emit()">
+      ⬅ Volver a cursos
+    </button>
+  </div>
+
+  <!-- Header -->
+  <div class="reviews-header">
+    <h2>Opiniones del curso</h2>
+    <h3 class="course-title">{{ curso?.titulo }}</h3>
+
+    <div class="summary" *ngIf="reviews.length">
+      ⭐ <strong>{{ promedio() }}</strong>
+      <span>({{ reviews.length }} reseñas)</span>
+    </div>
+  </div>
+
+  <!-- FORM -->
+  <div class="review-form-card">
+    <h4>📝 Deja tu reseña</h4>
+
+    <label>Título (opcional)</label>
+    <input
+      type="text"
+      [(ngModel)]="title"
+      placeholder="Ej: Excelente curso"
+      maxlength="100"
+    />
+
+    <label>Calificación</label>
+    <select [(ngModel)]="rating">
+      <option *ngFor="let r of [5,4,3,2,1]" [value]="r">
+        {{ r }} ⭐
+      </option>
+    </select>
+
+    <label>Comentario *</label>
+    <textarea
+      [(ngModel)]="comment"
+      rows="4"
+      placeholder="Cuéntanos tu experiencia con este curso"
+    ></textarea>
+
+    <button class="btn-primary" (click)="enviarReview()">
+      Enviar reseña
+    </button>
+  </div>
+
+  <!-- LISTADO -->
+  <div class="reviews-list">
+
+    <div *ngIf="loading" class="loading">
+      Cargando reseñas...
+    </div>
+
+    <div *ngIf="!loading && !reviews.length" class="empty">
+      Aún no hay reseñas para este curso.
+    </div>
+
+    <div *ngFor="let r of reviews" class="review-card">
+      <div class="review-header">
+        <span class="rating">{{ r.rating }} ⭐</span>
+        <small>{{ r.createdAt | date:'short' }}</small>
+      </div>
+
+      <strong class="review-title" *ngIf="r.title">
+        {{ r.title }}
+      </strong>
+
+      <p class="comment">
+        {{ r.comment }}
+      </p>
+    </div>
+
+  </div>
+
+</div>

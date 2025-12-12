@@ -1,0 +1,127 @@
+/* ===== CONTENEDOR GENERAL ===== */
+.reviews-wrapper {
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 24px;
+}
+
+/* ===== TOP BAR ===== */
+.reviews-top-bar {
+  display: flex;
+  justify-content: flex-start;
+  margin-bottom: 12px;
+}
+
+.btn-back-review {
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-weight: 600;
+  color: #2563eb;
+}
+
+/* ===== HEADER ===== */
+.reviews-header {
+  text-align: center;
+  margin-bottom: 24px;
+}
+
+.course-title {
+  margin: 4px 0;
+  font-weight: 600;
+}
+
+.summary {
+  color: #555;
+  margin-top: 4px;
+}
+
+/* ===== FORM CARD ===== */
+.review-form-card {
+  background: #fff;
+  border-radius: 10px;
+  padding: 20px;
+  margin-bottom: 24px;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.08);
+
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.review-form-card input,
+.review-form-card select,
+.review-form-card textarea {
+  padding: 8px;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+  font-family: inherit;
+}
+
+/* evita que el textarea se coma el botón */
+.review-form-card textarea {
+  resize: vertical;
+  max-height: 140px;
+  overflow-y: auto;
+}
+
+.btn-primary {
+  align-self: flex-start;
+  padding: 8px 14px;
+  border-radius: 6px;
+  border: none;
+  cursor: pointer;
+  background: #2563eb;
+  color: #fff;
+  font-weight: 600;
+}
+
+/* ===== LISTADO ===== */
+.reviews-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: 16px;
+
+  max-height: 420px;
+  overflow-y: auto;
+  padding-right: 4px;
+}
+
+/* ===== CARD ===== */
+.review-card {
+  background: #fff;
+  border-radius: 10px;
+  padding: 14px;
+  box-shadow: 0 3px 8px rgba(0,0,0,0.08);
+
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.review-header {
+  display: flex;
+  justify-content: space-between;
+  font-size: 14px;
+}
+
+.rating {
+  font-weight: bold;
+}
+
+.review-title {
+  font-size: 15px;
+}
+
+.comment {
+  font-size: 14px;
+  color: #333;
+}
+
+/* ===== ESTADOS ===== */
+.loading,
+.empty {
+  grid-column: 1 / -1;
+  text-align: center;
+  color: #666;
+}

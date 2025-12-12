@@ -1,0 +1,351 @@
+<div class="dashboard-container">
+
+  <header class="app-header">
+    <div class="header-content">
+      <div class="header-left">
+        <h1>
+          🎓 Plataforma de Cursos
+          <span class="badge-pro" [style.background]="isAdmin ? '#4f46e5' : '#10b981'">
+            {{ isAdmin ? 'Admin' : 'Estudiante' }}
+          </span>
+        </h1>
+        <p>Gestiona tu catálogo educativo de forma eficiente</p>
+      </div>
+      <!-- NUEVO: acciones de usuario -->
+      <div class="header-right">
+        <button class="btn-logout" (click)="logout()">
+          🚪 <span>Logout</span>
+        </button>
+      </div>
+      
+    </div>
+  </header>
+
+  <div class="content-wrapper">
+
+    <aside class="sidebar-section" *ngIf="isAdmin">
+      <div class="card form-card">
+        <div class="card-header">
+          <h3>{{ esEdicion ? '✏️ Editar Curso' : '✨ Nuevo Curso' }}</h3>
+        </div>
+
+        <div class="form-body">
+          <div class="form-group">
+            <label>Título</label>
+            <input
+              type="text"
+              [(ngModel)]="cursoActual.titulo"
+              placeholder="Ej: Angular Avanzado"
+              class="input-modern">
+          </div>
+
+          <div class="form-group">
+            <label>Instructor 👨‍🏫</label>
+            <input
+              type="text"
+              [(ngModel)]="cursoActual.instructor"
+              placeholder="Nombre del Docente"
+              class="input-modern">
+          </div>
+
+          <div class="form-group">
+            <label>Categoría</label>
+            <input
+              type="text"
+              [(ngModel)]="cursoActual.categoria"
+              placeholder="Ej: Frontend"
+              class="input-modern">
+          </div>
+
+          <div class="form-row">
+            <div class="form-group half">
+              <label>Nivel</label>
+              <select [(ngModel)]="cursoActual.nivel" class="input-modern">
+                <option value="Basico">🟢 Básico</option>
+                <option value="Intermedio">🟡 Intermedio</option>
+                <option value="Avanzado">🔴 Avanzado</option>
+              </select>
+            </div>
+            <div class="form-group half">
+              <label>Estado</label>
+              <select [(ngModel)]="cursoActual.estado" class="input-modern">
+                <option value="Activo">Activo</option>
+                <option value="Inactivo">Inactivo</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label>Descripción</label>
+            <textarea
+              [(ngModel)]="cursoActual.descripcion"
+              rows="3"
+              placeholder="Breve resumen..."
+              class="input-modern"></textarea>
+          </div>
+
+          <div class="form-actions">
+            <button (click)="guardarCurso()" class="btn btn-primary full-width">
+              {{ esEdicion ? 'Actualizar Cambios' : 'Crear Curso' }}
+            </button>
+            <button
+              *ngIf="esEdicion"
+              (click)="limpiarFormulario()"
+              class="btn btn-outline full-width mt-2">
+              Cancelar
+            </button>
+          </div>
+        </div>
+      </div>
+    </aside>
+
+    <main class="main-section" [style.flex]="isAdmin ? '2.5' : '1'">
+
+      <div class="card search-card">
+        <div class="search-bar">
+          <span class="search-icon">🔍</span>
+          <input
+            type="text"
+            [(ngModel)]="filtroTitulo"
+            (ngModelChange)="onSearchInput()"
+            placeholder="Buscar cursos..."
+            class="search-input">
+        </div>
+        <div class="filters-row">
+          <button (click)="limpiarFiltros()" class="btn btn-ghost">🔄 Limpiar</button>
+        </div>
+      </div>
+
+      <div class="courses-grid" *ngIf="cursosFiltrados.length > 0; else noData">
+        <div *ngFor="let curso of cursosFiltrados" class="course-card fade-in">
+          <div
+            class="course-status-indicator"
+            [class.active]="curso.estado === 'Activo'"></div>
+
+          <div class="course-content">
+            <div class="course-top">
+              <span class="badge category">{{ curso.categoria }}</span>
+              <span class="badge level">{{ curso.nivel }}</span>
+              <span *ngIf="curso.yaInscrito" class="badge enrolled">✅ Inscrito</span>
+            </div>
+
+            <h3 class="course-title">{{ curso.titulo }}</h3>
+
+            <p
+              class="instructor-text"
+              *ngIf="curso.instructor"
+              style="color: #64748b; font-size: 0.9rem; margin-bottom: 5px;">
+              👨‍🏫 {{ curso.instructor }}
+            </p>
+
+            <p class="course-desc">{{ curso.descripcion }}</p>
+
+            <div class="quota-section">
+              <div class="quota-info">
+                <small>
+                  Cupos:
+                  <strong>{{ curso.inscritosActuales || 0 }} / {{ curso.cuposMaximos || 20 }}</strong>
+                </small>
+
+                <div *ngIf="isAdmin" class="quota-controls">
+                  <button
+                    (click)="cambiarCupos(curso, -1)"
+                    class="btn-mini"
+                    title="Restar cupo">-</button>
+                  <button
+                    (click)="cambiarCupos(curso, 1)"
+                    class="btn-mini"
+                    title="Sumar cupo">+</button>
+                </div>
+
+                <small
+                  [style.color]="(curso.inscritosActuales || 0) >= (curso.cuposMaximos || 20) ? 'red' : 'green'">
+                  {{
+                    (curso.inscritosActuales || 0) >= (curso.cuposMaximos || 20)
+                      ? '¡Lleno!' : 'Disponible'
+                  }}
+                </small>
+              </div>
+
+              <div class="progress-bar-bg">
+                <div
+                  class="progress-bar-fill"
+                  [style.width.%]="((curso.inscritosActuales || 0) / (curso.cuposMaximos || 20)) * 100"></div>
+              </div>
+            </div>
+          </div>
+
+          <div class="course-footer">
+            <div class="main-action">
+              <button
+                *ngIf="curso.yaInscrito"
+                (click)="irAClase(curso)"
+                class="btn btn-sm btn-success full-width">
+                ▶ Ir a Clases
+              </button>
+
+              <button
+                *ngIf="!curso.yaInscrito && (curso.inscritosActuales || 0) < (curso.cuposMaximos || 20)"
+                (click)="inscribirse(curso)"
+                class="btn btn-sm btn-primary full-width">
+                Inscribirme
+              </button>
+
+              <button
+                *ngIf="!curso.yaInscrito && (curso.inscritosActuales || 0) >= (curso.cuposMaximos || 20)"
+                disabled
+                class="btn btn-sm btn-disabled full-width">
+                ⛔ Agotado
+              </button>
+            </div>
+
+            <div class="actions-right">
+              <button
+                (click)="verTemario(curso)"
+                class="btn-icon blue"
+                title="Ver Temario">
+                👁️
+              </button>
+
+              <button
+                (click)="irAResenas(curso)"
+                class="btn-icon orange"
+                title="Ver Reseñas">
+                ⭐
+              </button>
+
+              <ng-container *ngIf="isAdmin">
+                <button
+                  (click)="editarCurso(curso)"
+                  class="btn-icon yellow"
+                  title="Editar">
+                  ✏️
+                </button>
+                <button
+                  (click)="eliminarCurso(curso.idCurso!)"
+                  class="btn-icon red"
+                  title="Eliminar">
+                  🗑️
+                </button>
+              </ng-container>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <ng-template #noData>
+        <p class="empty-state">No hay cursos.</p>
+      </ng-template>
+    </main>
+  </div>
+</div>
+
+<!-- MODAL TEMARIO -->
+<div *ngIf="cursoSeleccionado" class="modal-overlay fade-in">
+  <div class="modal-modern">
+
+    <div class="modal-header">
+      <div>
+        <h2>{{ cursoSeleccionado.titulo }}</h2>
+        <p class="text-muted">{{ cursoSeleccionado.descripcion }}</p>
+      </div>
+      <button (click)="cerrarTemario()" class="close-btn">✕</button>
+    </div>
+
+    <div class="modal-body-scroll">
+
+      <div class="modal-actions-row" *ngIf="isAdmin">
+        <button (click)="agregarModulo()" class="btn btn-primary">
+          + Nuevo Módulo
+        </button>
+        <button
+          (click)="toggleModoOrden()"
+          class="btn"
+          [class.btn-warning]="!modoOrden"
+          [class.btn-success]="modoOrden">
+          {{ modoOrden ? '✅ Terminar Orden' : '🔃 Ordenar' }}
+        </button>
+      </div>
+
+      <h4 class="section-title">Contenido del Curso</h4>
+
+      <div cdkDropList (cdkDropListDropped)="dropModulo($event)" class="modules-list">
+
+        <div
+          *ngFor="let modulo of cursoSeleccionado.modulos"
+          class="module-item"
+          cdkDrag
+          [cdkDragDisabled]="!modoOrden">
+
+          <div class="module-header" (click)="toggleModulo(modulo)">
+            <div class="header-left">
+              <span *ngIf="modoOrden" class="drag-handle" cdkDragHandle>☰</span>
+
+              <span class="chevron">{{ modulo.isOpen ? '▼' : '▶' }}</span>
+              <span class="module-title">📂 {{ modulo.titulo }}</span>
+            </div>
+
+            <div *ngIf="isAdmin && !modoOrden" class="module-actions">
+              <button
+                (click)="agregarLeccion(modulo.idModulo!, modulo); $event.stopPropagation()"
+                class="btn-mini">
+                Add Lección
+              </button>
+              <button
+                (click)="editarModulo(modulo); $event.stopPropagation()"
+                class="btn-mini edit">
+                ✏️
+              </button>
+              <button
+                (click)="eliminarModulo(modulo.idModulo!); $event.stopPropagation()"
+                class="btn-mini red">
+                🗑️
+              </button>
+            </div>
+          </div>
+
+          <div
+            class="lessons-list"
+            *ngIf="modulo.isOpen"
+            cdkDropList
+            (cdkDropListDropped)="dropLeccion($event, modulo)">
+
+            <div
+              *ngFor="let leccion of modulo.lecciones; trackBy: trackByFn"
+              class="lesson-item"
+              cdkDrag
+              [cdkDragDisabled]="!modoOrden">
+
+              <div class="lesson-content-row">
+                <span *ngIf="modoOrden" class="drag-handle-sm" cdkDragHandle>⠿</span>
+
+                <span class="lesson-icon">📄</span>
+                <span class="lesson-name">{{ leccion.titulo }}</span>
+              </div>
+
+              <div *ngIf="isAdmin && !modoOrden" class="lesson-actions">
+                <button
+                  (click)="editarLeccion(leccion, modulo.idModulo!)"
+                  class="btn-icon-tiny"
+                  title="Editar">
+                  ✏️
+                </button>
+
+                <button
+                  (click)="eliminarLeccion(leccion)"
+                  class="btn-icon-tiny delete-btn"
+                  title="Eliminar">
+                  🗑️
+                </button>
+              </div>
+
+            </div>
+
+          </div>
+        </div>
+
+      </div>
+
+    </div>
+  </div>
+</div>

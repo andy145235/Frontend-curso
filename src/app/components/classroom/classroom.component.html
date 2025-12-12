@@ -1,0 +1,148 @@
+<div *ngIf="curso" class="classroom-container fade-in">
+
+  <aside class="classroom-sidebar">
+    <div class="sidebar-header">
+      <button (click)="volverAlHome()" class="btn-back">⬅ Volver</button>
+      <button
+        (click)="irAResenas()"
+        class="btn-reviews-sidebar">
+        ⭐ Ver Opiniones
+      </button>
+      <h3>{{ curso.titulo }}</h3>
+
+      <div class="progress-container">
+        <div class="progress-label">
+          <span>Tu avance:</span>
+          <strong>{{ progresoPorcentaje }}%</strong>
+        </div>
+        <div class="progress-track">
+          <div
+            class="progress-fill"
+            [style.width.%]="progresoPorcentaje"></div>
+        </div>
+      </div>
+
+      <p class="instructor-label">
+        👨‍🏫 Por: {{ curso.instructor || 'Docente por asignar' }}
+      </p>
+    </div>
+
+    <div class="modules-scroll">
+      <div *ngFor="let mod of curso.modulos; let i = index" class="module-group">
+
+        <div class="mod-title clickable" (click)="mod.isOpen = !mod.isOpen">
+          <span class="chevron">{{ mod.isOpen ? '▼' : '▶' }}</span>
+          📂 {{ mod.titulo }}
+        </div>
+
+        <div class="lessons-container" [class.show]="mod.isOpen">
+          <div
+            *ngFor="let lec of mod.lecciones"
+            (click)="seleccionarLeccion(lec)"
+            class="lesson-item"
+            [class.active]="leccionActual === lec">
+
+            <span
+              class="status-icon"
+              [class.completed]="esCompletada(lec.idLeccion!)">
+              {{ esCompletada(lec.idLeccion!) ? '✅' : '▶' }}
+            </span>
+
+            <span class="lesson-text">{{ lec.titulo }}</span>
+          </div>
+
+          <div *ngIf="!mod.lecciones?.length" class="no-lessons">
+            (Sin contenido)
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <div class="sidebar-footer">
+      <button
+        (click)="abandonarCurso()"
+        [disabled]="cargandoAbandonar"
+        class="btn-abandonar"
+        [class.loading]="cargandoAbandonar">
+        <span *ngIf="!cargandoAbandonar">🚪 Abandonar Curso</span>
+        <span *ngIf="cargandoAbandonar">⏳ Procesando...</span>
+      </button>
+    </div>
+  </aside>
+
+  <main class="classroom-content">
+    <div *ngIf="leccionActual; else welcomeMsg" class="content-player">
+
+      <div class="cinema-mode">
+        <div class="video-wrapper" *ngIf="leccionActual.videoUrl">
+          <iframe
+            [src]="leccionActual.videoUrl | safe"
+            title="Video Player"
+            frameborder="0"
+            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+            allowfullscreen>
+          </iframe>
+        </div>
+
+        <div *ngIf="!leccionActual.videoUrl" class="video-placeholder-modern">
+          <div class="icon-book">📖</div>
+          <p>Esta lección es de lectura. Revisa la descripción abajo.</p>
+        </div>
+      </div>
+
+      <div class="lesson-controls">
+        <div class="lesson-info-header">
+          <h2>{{ leccionActual.titulo }}</h2>
+          <span
+            class="badge-status"
+            [class.done]="esCompletada(leccionActual.idLeccion!)">
+            {{ esCompletada(leccionActual.idLeccion!) ? 'COMPLETADO' : 'PENDIENTE' }}
+          </span>
+        </div>
+
+        <button (click)="marcarYContinuar()" class="btn-next-lesson">
+          <span>
+            {{ esCompletada(leccionActual.idLeccion!) ? 'Continuar' : 'Completar y Siguiente' }}
+          </span>
+          <span class="arrow">→</span>
+        </button>
+      </div>
+
+      <hr class="divider">
+
+      <div class="lesson-details">
+        <div class="detail-section">
+          <h3>📝 Descripción</h3>
+          <p class="text-content">{{ leccionActual.contenido }}</p>
+        </div>
+
+        <div class="detail-section" *ngIf="leccionActual.pdfUrl">
+          <h3>📂 Recursos Descargables</h3>
+          <a
+            [href]="leccionActual.pdfUrl"
+            target="_blank"
+            class="resource-card">
+            <span class="file-icon">📄</span>
+            <div>
+              <strong>Material de Clase (PDF)</strong>
+              <small>Clic para ver o descargar</small>
+            </div>
+          </a>
+        </div>
+      </div>
+
+    </div>
+
+    <ng-template #welcomeMsg>
+      <div class="empty-state-pro">
+        <img
+          src="https://cdn-icons-png.flaticon.com/512/7480/7480597.png"
+          alt="Start"
+          width="150">
+        <h1>¡Estás listo para aprender! 🚀</h1>
+        <p>Selecciona la primera lección del menú a la izquierda para comenzar tu camino.</p>
+      </div>
+    </ng-template>
+  </main>
+</div>

@@ -8,12 +8,19 @@
     "noPropertyAccessFromIndexSignature": true,
     "noImplicitReturns": true,
     "noFallthroughCasesInSwitch": true,
+
     "skipLibCheck": true,
     "isolatedModules": true,
     "experimentalDecorators": true,
-    "importHelpers": true,
+
+    // 👇 CAMBIO CLAVE: desactivamos helpers para que no dependa de 'tslib'
+    "importHelpers": false,
+
     "target": "ES2022",
-    "module": "preserve"
+    "module": "preserve",
+
+    // Añadimos resolución tipo Node para evitar problemas raros
+    "moduleResolution": "node"
   },
   "angularCompilerOptions": {
     "enableI18nLegacyMessageIdFormat": false,

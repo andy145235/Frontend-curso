@@ -1,0 +1,36 @@
+.header-content {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.header-right {
+  display: flex;
+  align-items: center;
+}
+
+.btn-logout {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+
+  background: #ef4444;
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+
+  padding: 8px 14px;
+  font-weight: 600;
+  cursor: pointer;
+
+  transition: background 0.2s ease, transform 0.1s ease;
+}
+
+.btn-logout:hover {
+  background: #dc2626;
+  transform: translateY(-1px);
+}
+
+.btn-logout span {
+  font-size: 0.9rem;
+}
